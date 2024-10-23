@@ -1,10 +1,11 @@
-import express from "express";
-import PubSub from "./pub-sub/index.js";
+const express = require("express");
+const PubSub = require("./pub-sub");
 
 const app = express();
 const PORT = 5050;
 
 app.use(express.json());
+PubSub.bindSubscribers();
 
 app.get("/review/post", (req, res) => {
   const { rating } = req.query;

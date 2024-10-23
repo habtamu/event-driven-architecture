@@ -1,7 +1,5 @@
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
+const fs = require("fs");
+const path = require("path");
 
 const subscribers = {};
 
@@ -42,20 +40,17 @@ const subscribe = (event, executer) => {
 const bindSubscribers = () => {
   console.log("Binding subscribers...");
 
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-  const subscribersDir = path.join(__dirname, "..", "subscribers");
+  const subscribersDir = path.join(__dirname, "../", "subscribers");
 
   fs.readdirSync(subscribersDir).forEach((file) => {
-    import(path.join(subscribersDir, file));
+    require(path.join(subscribersDir, file));
   });
 
   console.log("🔗 Subscribers bound");
 };
 
-bindSubscribers();
-
-export default {
+module.exports = {
   invoke,
   subscribe,
+  bindSubscribers,
 };

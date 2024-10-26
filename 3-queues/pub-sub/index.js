@@ -1,26 +1,19 @@
 const fs = require("fs");
 const path = require("path");
-const { createClient } = require("redis");
+const { connect, sendToQueue, consumeQueue } = require("../rabbitmq");
 
-let redisPublisher;
-let redisSubscriber;
+const subscribers = {};
 
-(function connectToRedis() {
-  try {
-    redisPublisher = createClient();
-    redisSubscriber = createClient();
-
-    redisPublisher.connect();
-    redisSubscriber.connect();
-  } catch (err) {
-    console.error("Error while trying to connect to Redis: ", err);
-  }
-})();
+connect()
+  .then(() => {
+    console.log("RabbitMQ connection established ✅");
+  })
+  .catch((err) => {
+    console.error(err);
+  });
 
 const invoke = async (name, data) => {
-  const message = JSON.stringify(data);
-
-  redisPublisher.publish(name, message).catch((err) => {
+  sendToQueue(name, data).catch((err) => {
     console.error(`Error while invoking event`, { name, err });
   });
 };
@@ -33,15 +26,25 @@ const subscribe = (event, executer) => {
   const events = Array.isArray(event) ? event : [event];
 
   for (const eventName of events) {
-    redisSubscriber.subscribe(eventName, (message) => {
-      const data = JSON.parse(message);
-      executer(data);
-    });
+    if (!subscribers[eventName]) {
+      subscribers[eventName] = [];
+
+      consumeQueue(eventName, async (message) => {
+        for (const handler of subscribers[eventName]) {
+          handler(message);
+        }
+      });
+    }
+
+    // Add the handler to the list of subscribers for the event
+    subscribers[eventName].push(executer);
   }
 };
 
-const bindSubscribers = () => {
+const bindSubscribers = async () => {
   console.log("Binding subscribers...");
+
+  await connect();
 
   const subscribersDir = path.join(__dirname, "../", "subscribers");
 

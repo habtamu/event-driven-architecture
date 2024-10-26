@@ -10,10 +10,18 @@ Start with installing the dependencies
 
     docker-compose up -d
 
+**Run the express server:**
+Run the express server
+
+    pnpm start
+
+**Run the consumers:**
+Run the consumers
+
+    pnpm start:consumers
+
 ---
 
-**Check the RedisInsight**
+**Check the RabbitMQ**
 
-- Enter http://localhost:5540/
-- Add your database and **use your local IP instead of `localhost`**
-- Go to the last tab (Pub/Sub) and hit `Subscribe`
+- Enter http://localhost:15672/

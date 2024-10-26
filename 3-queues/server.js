@@ -5,7 +5,6 @@ const app = express();
 const PORT = 5050;
 
 app.use(express.json());
-PubSub.bindSubscribers();
 
 app.get("/review/post", (req, res) => {
   const { rating } = req.query;

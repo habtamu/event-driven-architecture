@@ -1,27 +1,28 @@
 const fs = require("fs");
 const path = require("path");
+const { createClient } = require("redis");
 
-const subscribers = {};
+let redisPublisher;
+let redisSubscriber;
 
-const invoke = (name, data) => {
-  const subs = subscribers[name] || [];
+(function connectToRedis() {
+  try {
+    redisPublisher = createClient();
+    redisSubscriber = createClient();
 
-  const subscribersFunctions = subs.map((sub) => {
-    return new Promise((resolve) => {
-      try {
-        sub(data);
-      } catch (error) {
-        console.error(`Error while executing subscriber`, {
-          eventName: name,
-          error,
-        });
-      } finally {
-        resolve();
-      }
-    });
+    redisPublisher.connect();
+    redisSubscriber.connect();
+  } catch (err) {
+    console.error("Error while trying to connect to Redis: ", err);
+  }
+})();
+
+const invoke = async (name, data) => {
+  const message = JSON.stringify(data);
+
+  redisPublisher.publish(name, message).catch((err) => {
+    console.error(`Error while invoking event`, { name, err });
   });
-
-  Promise.all(subscribersFunctions);
 };
 
 const subscribe = (event, executer) => {
@@ -32,8 +33,10 @@ const subscribe = (event, executer) => {
   const events = Array.isArray(event) ? event : [event];
 
   for (const eventName of events) {
-    subscribers[eventName] = subscribers[eventName] || [];
-    subscribers[eventName].push(executer);
+    redisSubscriber.subscribe(eventName, (message) => {
+      const data = JSON.parse(message);
+      executer(data);
+    });
   }
 };
 

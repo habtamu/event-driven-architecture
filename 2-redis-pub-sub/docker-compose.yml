@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis_pubsub
+    ports:
+      - "6379:6379"
+    networks:
+      - pubsub_network
+    volumes:
+      - redis_data:/data
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: redis_insight
+    ports:
+      - "5540:5540"
+    networks:
+      - pubsub_network
+
+networks:
+  pubsub_network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local

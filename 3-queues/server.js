@@ -19,7 +19,7 @@ app.get("/review/post", (req, res) => {
 
   PubSub.invoke("review-posted", review);
 
-  res.send({ message: "Event published successfully" });
+  res.send({ message: "Review posted successfully" });
 });
 
 app.get("/review/reply", (req, res) => {
@@ -36,9 +36,9 @@ app.get("/review/reply", (req, res) => {
 
   PubSub.invoke("review-reply", review);
 
-  res.send({ message: "Event published successfully" });
+  res.send({ message: "Reply posted successfully" });
 });
 
 app.listen(PORT, () => {
-  console.log(`Pub-Sub demo is running on port ${PORT}\n`);
+  console.log(`Server running on port ${PORT}\n`);
 });

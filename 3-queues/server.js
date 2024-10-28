@@ -1,10 +1,12 @@
 const express = require("express");
+const cors = require("cors");
 const PubSub = require("./pub-sub");
 
 const app = express();
 const PORT = 5050;
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/review/post", (req, res) => {
   const { rating } = req.query;

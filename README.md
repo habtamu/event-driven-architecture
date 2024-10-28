@@ -1,7 +1,3 @@
-Here’s a `README.md` file that describes each part of the project (Basic Pub-Sub, Redis Message Broker, and RabbitMQ Queues). This README will guide users on how to set up and run each part of the event-driven architecture examples.
-
----
-
 # Event-Driven Architecture Demo
 
 This repository demonstrates building an event-driven architecture from the ground up, progressing through three stages:

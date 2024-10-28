@@ -9,6 +9,22 @@ app.use(express.json());
 app.use(cors());
 PubSub.bindSubscribers();
 
+app.post("/review/post", (req, res) => {
+  const { rating } = req.body;
+
+  if (!rating) {
+    return res
+      .status(400)
+      .send({ message: "Please provide the necessary data" });
+  }
+
+  const review = { rating, status: "active" };
+
+  PubSub.invoke("review-posted", review);
+
+  res.send({ message: "Review posted successfully" });
+});
+
 app.get("/review/post", (req, res) => {
   const { rating } = req.query;
 

@@ -39,16 +39,9 @@ This repository showcases a progression of three event-driven architectures to d
 ## Getting Started
 
 To set up the project, ensure you have **Node.js**, **Docker**, and **Docker Compose** installed.
-
-Clone the repository and install the necessary dependencies:
-
-```bash
-git clone <repository-url>
-cd event-driven-architecture-demo
-npm install
-```
-
 The project is divided into three parts, each with its own setup instructions.
+
+Each part has its own README.md file with the instructions.
 
 ---
 
@@ -57,18 +50,7 @@ The project is divided into three parts, each with its own setup instructions.
 ### 1. Basic Pub-Sub
 
 The Basic Pub-Sub pattern is an in-memory model, using a custom `EventEmitter` class for a single-instance setup.
-
-1. **Run the Server**:
-   ```bash
-   node basic-pubsub/index.js
-   ```
-
-2. **Endpoints**:
-   - `GET /review/post?rating=<rating>`: Publishes a "review-posted" event.
-   - `GET /review/reply?id=<id>&reply=<reply>`: Publishes a "review-reply" event.
-
-3. **Description**:
-   - This model is limited to a single instance and does not support distributed processing or message durability.
+  - This model is limited to a single instance and does not support distributed processing or message durability.
 
 ---
 
@@ -76,23 +58,6 @@ The Basic Pub-Sub pattern is an in-memory model, using a custom `EventEmitter` c
 
 The Redis Message Broker introduces distributed messaging, enabling multiple instances of consumers to listen to the same events.
 
-1. **Start Redis**:
-   Use Docker Compose to run Redis and RedisInsight for monitoring.
-
-   ```bash
-   docker-compose up -d redis redisinsight
-   ```
-
-2. **Run the Redis Pub-Sub Server**:
-   ```bash
-   node redis-pubsub/index.js
-   ```
-
-3. **Endpoints**:
-   - `GET /review/post?rating=<rating>`: Publishes a "review-posted" event to Redis.
-   - `GET /review/reply?id=<id>&reply=<reply>`: Publishes a "review-reply" event to Redis.
-
-4. **Description**:
    - Redis distributes events across multiple consumer instances, allowing for scalability.
    - However, it does not guarantee message durability, meaning messages can be lost if a consumer is offline.
 
@@ -101,24 +66,6 @@ The Redis Message Broker introduces distributed messaging, enabling multiple ins
 ### 3. RabbitMQ Queues
 
 The RabbitMQ Queues implementation uses a queue-based model to ensure each message is processed exactly once by a single consumer.
-
-1. **Start RabbitMQ**:
-   Use Docker Compose to run RabbitMQ and its management interface.
-
-   ```bash
-   docker-compose up -d rabbitmq
-   ```
-
-2. **Run the RabbitMQ Queue Server**:
-   ```bash
-   node rabbitmq-queue/index.js
-   ```
-
-3. **Endpoints**:
-   - `GET /review/post?rating=<rating>`: Publishes a "review-posted" message to RabbitMQ.
-   - `GET /review/reply?id=<id>&reply=<reply>`: Publishes a "review-reply" message to RabbitMQ.
-
-4. **Description**:
    - RabbitMQ ensures message durability and provides load balancing by distributing messages across multiple consumers.
    - This is ideal for critical workflows where reliable message processing is necessary.
 
